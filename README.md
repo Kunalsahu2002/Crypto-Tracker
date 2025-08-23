@@ -4,7 +4,8 @@ A modern, responsive cryptocurrency tracking application built with React that p
 
 ## 🚀 Live Demo
 
-**Live Demo** - https://kunalsahu2002.github.io/Crypto-Tracker/
+- ### ⚠️ Note: If the page looks blank, please click on **CryptoTrek** title on top-left side to load the site.
+- **Live Demo** - https://kunalsahu2002.github.io/Crypto-Tracker/
 
 ## 📱 Screenshots
 
