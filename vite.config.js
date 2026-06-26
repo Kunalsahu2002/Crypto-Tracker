@@ -9,7 +9,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
-    base: '/',
+    base: mode === 'production' ? '/Crypto-Tracker/' : '/',
     server: {
       proxy: {
         '/api': {

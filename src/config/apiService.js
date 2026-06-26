@@ -21,11 +21,29 @@ import axios from 'axios';
 
 // ── API Key (optional but strongly recommended) ───────────────────────────────
 const API_KEY = import.meta.env.VITE_CG_DEMO_KEY || '';
+const IS_PROD = import.meta.env.PROD;
 
-// Axios instance – key goes in header so the Vite proxy forwards it
+// Axios instance
 const http = axios.create({
+  baseURL: IS_PROD ? 'https://api.coingecko.com' : '',
   timeout: 30_000,
-  headers: API_KEY ? { 'x-cg-demo-api-key': API_KEY } : {},
+});
+
+// Interceptor to attach the API key correctly
+http.interceptors.request.use((config) => {
+  if (API_KEY) {
+    if (IS_PROD) {
+      // In production, pass the key as a query parameter to avoid CORS preflight (OPTIONS) header failures
+      config.params = {
+        ...config.params,
+        x_cg_demo_api_key: API_KEY,
+      };
+    } else {
+      // In development, pass as a header (handled/forwarded by the Vite proxy server)
+      config.headers['x-cg-demo-api-key'] = API_KEY;
+    }
+  }
+  return config;
 });
 
 // ── Cache Config ─────────────────────────────────────────────────────────────
