@@ -4,7 +4,7 @@ import Carousel from "./Carousel";
 
 const Banner = () => {
   return (
-    <div style={{ backgroundImage: "url('./banner2.jpg')" }}>
+    <div style={{ backgroundImage: `url(${import.meta.env.BASE_URL}banner2.jpg)` }}>
       <Container
         style={{
           height: 400,
