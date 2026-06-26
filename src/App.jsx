@@ -8,8 +8,10 @@ import "./App.css";
 //The app.jsx file which contains the layout of the website
 
 function App() {
+  const basename = import.meta.env.PROD ? "/Crypto-Tracker" : "";
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <div
         style={{
           backgroundColor: "#14161a",
