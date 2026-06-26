@@ -1,6 +1,6 @@
-import axios from "axios";
 import React from "react";
 import { TrendingCoins } from "../../config/api";
+import { fetchAPI } from "../../config/apiService";
 import { CryptoState } from "../../CryptoContext";
 import { useState, useEffect } from "react";
 import AliceCarousel from "react-alice-carousel";
@@ -12,12 +12,18 @@ export function numberWithCommas(x) {
 
 const Carousel = () => {
   const [trending, setTrending] = useState([]);
+  const [error, setError] = useState(null);
   const { currency, symbol } = CryptoState();
 
   const fetchtrendingCoins = async () => {
-    const { data } = await axios.get(TrendingCoins(currency));
-    setTrending(data);
-    // console.log(data)
+    try {
+      setError(null);
+      const data = await fetchAPI(TrendingCoins(currency));
+      setTrending(data);
+    } catch (err) {
+      console.error("Carousel fetch error:", err.message);
+      setError(err.message);
+    }
   };
 
   useEffect(() => {
@@ -68,6 +74,26 @@ const Carousel = () => {
       items: 4,
     },
   };
+
+  if (error) {
+    return (
+      <div
+        style={{
+          height: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "gold",
+          fontSize: 14,
+          padding: "10px 20px",
+          textAlign: "center",
+        }}
+      >
+        ⚠️ {error}
+      </div>
+    );
+  }
+
   return (
     <div style={{ height: "50%", display: "flex", alignItems: "center" }}>
       <AliceCarousel

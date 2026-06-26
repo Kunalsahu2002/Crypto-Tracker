@@ -1,7 +1,7 @@
 import React from "react";
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { CoinList } from "../config/api";
+import { fetchAPI } from "../config/apiService";
 import { CryptoState } from "../CryptoContext";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import {
@@ -20,19 +20,28 @@ import {
 import { useNavigate } from "react-router-dom";
 import { numberWithCommas } from "./Banner/Carousel";
 
+// ─────────────────────────────────────────────────────────────────────────────
 const CoinsTable = () => {
   const [coins, setCoins] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const { currency, symbol, theme, toggleTheme } = CryptoState();
-  const navigate = useNavigate(); // Use useNavigate instead of useHistory
+  const navigate = useNavigate();
 
   const fetchCoins = async () => {
     setLoading(true);
-    const { data } = await axios.get(CoinList(currency));
-    setCoins(data);
-    setLoading(false);
+    setError(null);
+    try {
+      const data = await fetchAPI(CoinList(currency));
+      setCoins(data);
+    } catch (err) {
+      console.error("CoinsTable fetch error:", err.message);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
   // console.log(coins)
 
@@ -109,6 +118,18 @@ const CoinsTable = () => {
                   backgroundColor: theme === "dark" ? "gold" : "#00A550",
                 }}
               />
+            ) : error ? (
+              <div
+                style={{
+                  padding: "40px 20px",
+                  textAlign: "center",
+                  color: theme === "dark" ? "gold" : "#c0392b",
+                  fontSize: 16,
+                  fontFamily: "Montserrat",
+                }}
+              >
+                ⚠️ {error}
+              </div>
             ) : (
               <Table>
                 <TableHead

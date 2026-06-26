@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { CryptoState } from "../CryptoContext";
-import axios from "axios";
+import { fetchAPI } from "../config/apiService";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { HistoricalChart } from "../config/api";
 import { Box, CircularProgress } from "@mui/material";
@@ -33,16 +33,22 @@ const CoinInfo = ({ coin }) => {
   const [historicData, setHistoricData] = useState();
   const [days, setDays] = useState(1);
   const [flag, setflag] = useState(false);
+  const [error, setError] = useState(null);
 
   const { currency, theme } = CryptoState();
 
   const fetchHistoricData = async () => {
-    const { data } = await axios.get(HistoricalChart(coin.id, days, currency));
-    setflag(true);
-    setHistoricData(data.prices);
+    setError(null);
+    try {
+      const data = await fetchAPI(HistoricalChart(coin.id, days, currency));
+      setflag(true);
+      setHistoricData(data.prices);
+    } catch (err) {
+      console.error("CoinInfo chart error:", err.message);
+      setError(err.message);
+      setflag(false);
+    }
   };
-
-  // console.log(coin);
 
   useEffect(() => {
     if (coin) {
@@ -69,16 +75,27 @@ const CoinInfo = ({ coin }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          justifyContent: "center",
-          padding: { xs: 10, md: 10 }, // before md:20
+          justifyContent: "flex-start",
+          padding: { xs: "16px", md: "24px 32px" },
         }}
       >
-        {!historicData ? (
+        {error ? (
+          <div
+            style={{
+              color: theme === "dark" ? "gold" : "#c0392b",
+              textAlign: "center",
+              fontFamily: "Montserrat",
+              fontSize: 15,
+              padding: "40px 20px",
+            }}
+          >
+            ⚠️ {error}
+          </div>
+        ) : !historicData ? (
           <CircularProgress
             style={{ color: theme === "dark" ? "gold" : "#00A550" }}
             size={250}
             thickness={1}
-            // aria-label="Loading historical data"
           />
         ) : (
           <>
